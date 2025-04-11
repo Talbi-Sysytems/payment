@@ -63,13 +63,6 @@
       background-color: #d1d1d1;
     }
 
-    .button-row {
-      grid-column: span 3;
-      display: center;
-      margin-top: 10px;
-		margin-left: 75px;
-    }
-
     button.cancel {
       background-color: red;
       color: white;
@@ -86,6 +79,14 @@
 
     button.ok:hover {
       background-color: #2e7d32;
+    }
+
+    /* Center the "C", "0", and "OK" buttons in the bottom row */
+    .button-row {
+      grid-column: span 3;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
     }
 
     @media screen and (max-width: 480px) {
