@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Payment Terminal</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f2f4f8;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+
+    .terminal {
+      background-color: #ffffff;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 0 25px rgba(0, 0, 0, 0.1);
+      max-width: 360px;
+      width: 90%;
+    }
+
+    .screen {
+      background-color: #1b2a41;
+      color: #00ff99;
+      font-size: 1.6em;
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      height: 80px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .keypad {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+
+    button {
+      padding: 18px;
+      font-size: 1.2em;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      background-color: #e0e0e0;
+      transition: background-color 0.2s;
+    }
+
+    button:hover {
+      background-color: #d1d1d1;
+    }
+
+    .button-row {
+      grid-column: span 3;
+      display: center;
+      margin-top: 10px;
+		margin-left: 75px;
+    }
+
+    button.cancel {
+      background-color: red;
+      color: white;
+    }
+
+    button.cancel:hover {
+      background-color: #c62828;
+    }
+
+    button.ok {
+      background-color: green;
+      color: white;
+    }
+
+    button.ok:hover {
+      background-color: #2e7d32;
+    }
+
+    @media screen and (max-width: 480px) {
+      .screen {
+        font-size: 1.4em;
+        padding: 15px;
+      }
+
+      button {
+        padding: 16px;
+        font-size: 1.1em;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="terminal">
+    <div class="screen" id="display">Enter Amount</div>
+    <div class="keypad">
+      <button onclick="pressKey('1')">1</button>
+      <button onclick="pressKey('2')">2</button>
+      <button onclick="pressKey('3')">3</button>
+      <button onclick="pressKey('4')">4</button>
+      <button onclick="pressKey('5')">5</button>
+      <button onclick="pressKey('6')">6</button>
+      <button onclick="pressKey('7')">7</button>
+      <button onclick="pressKey('8')">8</button>
+      <button onclick="pressKey('9')">9</button>
+      <div class="button-row">
+        <button class="cancel" onclick="cancel()">C</button>
+        <button onclick="pressKey('0')">0</button>
+        <button class="ok" onclick="confirm()">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MP3 sounds -->
+  <audio id="clickSound" src="click.mp3"></audio>
+  <audio id="scanSound" src="scan.mp3"></audio>
+  <audio id="acceptedSound" src="success.mp3"></audio>
+
+  <script>
+    let phase = "amount"; // 'amount' or 'pin'
+    let amount = "";
+    let pin = "";
+
+    function playSound(id) {
+      const sound = document.getElementById(id);
+      if (sound) {
+        sound.currentTime = 0;
+        sound.play();
+      }
+    }
+
+    function pressKey(key) {
+      playSound('clickSound');
+
+      if (phase === "amount") {
+        if (amount.length < 6) {
+          amount += key;
+          document.getElementById("display").textContent = "" + amount;
+        }
+      } else if (phase === "pin") {
+        if (pin.length < 4) {
+          pin += key;
+          document.getElementById("display").textContent = "PIN: " + "*".repeat(pin.length);
+        }
+      }
+    }
+
+    function confirm() {
+      if (phase === "amount" && amount !== "") {
+        phase = "pin";
+        document.getElementById("display").textContent = "PIN: ";
+        playSound('scanSound');
+      } else if (phase === "pin" && pin.length === 4) {
+        document.getElementById("display").textContent = "✅ Payment Accepted";
+        playSound('acceptedSound');
+        setTimeout(reset, 2500);
+      }
+    }
+
+    function cancel() {
+      reset();
+    }
+
+    function reset() {
+      phase = "amount";
+      amount = "";
+      pin = "";
+      document.getElementById("display").textContent = "Enter Amount";
+    }
+  </script>
+
+</body>
+</html>
